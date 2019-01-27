@@ -3,11 +3,16 @@ package com.test.FileUploaderService.Service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.MultipleFileDownload;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.*;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +29,8 @@ public class AmazonS3ClientService{
     private String bucketName;
 
     private static final Logger LOGGER = Logger.getLogger(AmazonS3ClientService.class.getName());
+    private static final String DESTINATION_DIRECTORY = "./Files";
+    private static final String ZIP_LOCATION = "./Files.zip";
 
 
     @PostConstruct
@@ -68,4 +75,34 @@ public class AmazonS3ClientService{
         }
     }
 
+    public InputStreamResource getAllFiles(){
+        TransferManager xfer_mgr = TransferManagerBuilder.standard().withS3Client(s3client).build();
+        try {
+            File fileTransferPath = new File(DESTINATION_DIRECTORY);
+            MultipleFileDownload download = xfer_mgr.downloadDirectory(bucketName, null, fileTransferPath);
+            download.waitForCompletion();
+
+            return getTransferableData(fileTransferPath);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur", e);
+        }
+        xfer_mgr.shutdownNow();
+        return null;
+    }
+
+    private InputStreamResource getTransferableData(File destination){
+        try{
+            FileUtils.zipFolder(Paths.get(DESTINATION_DIRECTORY), Paths.get(ZIP_LOCATION));
+            FileUtils.deleteDirectory(destination);
+
+            File zipFile = new File(ZIP_LOCATION);
+            InputStreamResource inputStreamResource = new InputStreamResource(new FileInputStream(zipFile));
+            zipFile.delete();
+            return inputStreamResource;
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur", e);
+            return null;
+        }
+    }
 }
