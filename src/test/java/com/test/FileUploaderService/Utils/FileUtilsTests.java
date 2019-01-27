@@ -7,8 +7,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 public class FileUtilsTests {
 
@@ -24,5 +26,11 @@ public class FileUtilsTests {
         File toDelete2 = new File("./data");
         toDelete1.delete();
         toDelete2.delete();
+    }
+
+    @Test
+    public void generateFileNameShouldGenerateFileName(){
+        MockMultipartFile file = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
+        assertTrue(FileUtils.generateFileName(file, "uniqueId").equals("File-filename.txtuniqueId"));
     }
 }
