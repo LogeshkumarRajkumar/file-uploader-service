@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -23,7 +24,6 @@ public class AmazonS3ClientService{
     private String bucketName;
 
     private static final Logger LOGGER = Logger.getLogger(AmazonS3ClientService.class.getName());
-
 
     @PostConstruct
     private void initializeAmazon() {
@@ -46,4 +46,14 @@ public class AmazonS3ClientService{
         }
     }
 
+    public InputStreamResource getFile(String fileName){
+        try {
+            S3Object object = s3client.getObject(bucketName, fileName);
+            S3ObjectInputStream objectContent = object.getObjectContent();
+            return new InputStreamResource(objectContent);
+        }catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur", e);
+            return null;
+        }
+    }
 }

@@ -57,4 +57,37 @@ public class AmazonS3ClientServiceTests {
         // Then
         assertTrue(result == null);
     }
+
+    @Test
+    public void getFileShouldReturnRequestedFile() throws Exception {
+
+        // Given
+        S3Object obj = new S3Object();
+        obj.setObjectContent(new FileInputStream(new File("./src/test/test")));
+        when(client.getObject(any(), (String) any())).thenReturn(obj);
+        MockMultipartFile file = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
+
+        // When
+        InputStreamResource result = s3ClientService.getFile("file");
+
+        // Then
+        assertTrue(result != null);
+        InputStreamResource expected = new InputStreamResource(obj.getObjectContent());
+        assertTrue(expected.equals(result));
+
+    }
+
+    @Test
+    public void getFileShouldReturnNullWhenAnyExceptionThrown() throws Exception {
+        // Given
+        SdkClientException sdkClientException = new SdkClientException("");
+        when(client.getObject(any(), (String) any())).thenThrow(sdkClientException);
+        MockMultipartFile file = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
+
+        // When
+        InputStreamResource result = s3ClientService.getFile("file");
+
+        // Then
+        assertTrue(result == null);
+    }
 }
