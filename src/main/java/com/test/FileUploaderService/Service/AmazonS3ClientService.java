@@ -25,6 +25,7 @@ public class AmazonS3ClientService{
 
     private static final Logger LOGGER = Logger.getLogger(AmazonS3ClientService.class.getName());
 
+
     @PostConstruct
     private void initializeAmazon() {
         this.s3client = AmazonS3ClientBuilder.standard()
@@ -46,6 +47,16 @@ public class AmazonS3ClientService{
         }
     }
 
+    public boolean deleteFile(String fileName) {
+        try{
+            s3client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+            return true;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur", e);
+            return false;
+        }
+    }
+
     public InputStreamResource getFile(String fileName){
         try {
             S3Object object = s3client.getObject(bucketName, fileName);
@@ -56,4 +67,5 @@ public class AmazonS3ClientService{
             return null;
         }
     }
+
 }

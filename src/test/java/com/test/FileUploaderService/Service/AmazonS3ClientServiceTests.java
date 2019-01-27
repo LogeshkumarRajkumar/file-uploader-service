@@ -12,9 +12,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.mock.web.MockMultipartFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -89,5 +91,15 @@ public class AmazonS3ClientServiceTests {
 
         // Then
         assertTrue(result == null);
+    }
+
+    @Test
+    public void deleteFileShouldDeleteFile() throws Exception {
+
+        // When
+        boolean result =s3ClientService.deleteFile("file");
+
+        // Then
+        assertTrue(result);
     }
 }
