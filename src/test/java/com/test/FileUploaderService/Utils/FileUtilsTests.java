@@ -29,6 +29,14 @@ public class FileUtilsTests {
     }
 
     @Test
+    public void shouldZipTheSourceDirectoryAndPutItInDestination() throws Exception {
+        FileUtils.zipFolder(Paths.get("./src/test/TestDirectory"), Paths.get("./src/test/test.zip"));
+        File file = new File("./src/test/test.zip");
+        assertTrue(file.exists());
+        file.delete();
+    }
+
+    @Test
     public void generateFileNameShouldGenerateFileName(){
         MockMultipartFile file = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
         assertTrue(FileUtils.generateFileName(file, "uniqueId").equals("File-filename.txtuniqueId"));
