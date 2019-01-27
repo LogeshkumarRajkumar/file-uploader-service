@@ -65,4 +65,33 @@ public class FileUploadControllerTests {
         assertTrue(response.getBody().id.equals(fileId));
     }
 
+    @Test
+    public void getFileShouldReturnNotFoundWhenInvalidIdIsRequested() throws FileNotFoundException {
+
+        //Given
+        String fileId = "file-id";
+        when(s3ClientService.getFile(fileId)).thenReturn(null);
+
+        //When
+        ResponseEntity response = controller.getFile(fileId);
+
+        //Then
+        assertTrue(response.getStatusCode().equals(HttpStatus.NOT_FOUND));
+    }
+
+    @Test
+    public void getFileShouldReturnRequestedFile() throws FileNotFoundException {
+
+        //Given
+        InputStreamResource res = new InputStreamResource(new FileInputStream(new File("./src/test/test")));
+        String fileId = "file-id";
+        when(s3ClientService.getFile(fileId)).thenReturn(res);
+
+        //When
+        ResponseEntity response = controller.getFile(fileId);
+
+        //Then
+        assertTrue(response.getStatusCode().equals(HttpStatus.OK));
+        assertTrue(response.getBody().equals(res));
+    }
 }

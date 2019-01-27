@@ -3,7 +3,9 @@ package com.test.FileUploaderService.Controller;
 import com.test.FileUploaderService.Responses.FileCreatedResponse;
 import com.test.FileUploaderService.Service.AmazonS3ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,5 +25,17 @@ public class FileUploadController {
         if(uniqueFileIdentifier!=null)
             return new ResponseEntity<FileCreatedResponse>(new FileCreatedResponse(uniqueFileIdentifier),HttpStatus.CREATED);
         return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/files/{name}")
+    public ResponseEntity<InputStreamResource> getFile(@PathVariable("name") String fileName) {
+        InputStreamResource file = amazonS3ClientService.getFile(fileName);
+
+        if(file == null)
+            return new ResponseEntity(null, HttpStatus.NOT_FOUND);
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header("Content-Disposition", "attachment; filename=" + fileName)
+                .body(file);
     }
 }
