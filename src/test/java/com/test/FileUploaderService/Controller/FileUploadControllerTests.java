@@ -96,6 +96,35 @@ public class FileUploadControllerTests {
     }
 
     @Test
+    public void getAllFileShouldReturnNotFoundIfAnyException() throws FileNotFoundException {
+
+        //Given
+        when(s3ClientService.getAllFiles()).thenReturn(null);
+
+        //When
+        ResponseEntity response = controller.getAllFiles();
+
+        //Then
+        assertTrue(response.getStatusCode().equals(HttpStatus.NOT_FOUND));
+    }
+
+    @Test
+    public void getAllFilesShouldReturnAllFilesInAZip() throws FileNotFoundException {
+
+        //Given
+        InputStreamResource res = new InputStreamResource(new FileInputStream(new File("./src/test/test")));
+        String fileId = "file-id";
+        when(s3ClientService.getAllFiles()).thenReturn(res);
+
+        //When
+        ResponseEntity response = controller.getAllFiles();
+
+        //Then
+        assertTrue(response.getStatusCode().equals(HttpStatus.OK));
+        assertTrue(response.getBody().equals(res));
+    }
+
+    @Test
     public void deleteFileShouldReturnNotFound() throws FileNotFoundException {
 
         //Given

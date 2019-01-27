@@ -39,6 +39,18 @@ public class FileUploadController {
                 .body(file);
     }
 
+    @GetMapping("/files/")
+    public ResponseEntity<InputStreamResource> getAllFiles() {
+        InputStreamResource file = amazonS3ClientService.getAllFiles();
+
+        if(file == null)
+            return new ResponseEntity(null, HttpStatus.NOT_FOUND);
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header("Content-Disposition", "attachment; filename=AllFiles.Zip")
+                .body(amazonS3ClientService.getAllFiles());
+    }
+
     @DeleteMapping("/files/{name}")
     public ResponseEntity deleteFile(@PathVariable("name") String fileName) {
 
