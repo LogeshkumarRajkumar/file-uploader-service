@@ -94,4 +94,32 @@ public class FileUploadControllerTests {
         assertTrue(response.getStatusCode().equals(HttpStatus.OK));
         assertTrue(response.getBody().equals(res));
     }
+
+    @Test
+    public void deleteFileShouldReturnNotFound() throws FileNotFoundException {
+
+        //Given
+        String fileId = "file-id";
+        when(s3ClientService.deleteFile(fileId)).thenReturn(false);
+
+        //When
+        ResponseEntity response = controller.deleteFile(fileId);
+
+        //Then
+        assertTrue(response.getStatusCode().equals(HttpStatus.NOT_FOUND));
+    }
+
+    @Test
+    public void deleteFileShouldDeleteTheFile() throws FileNotFoundException {
+
+        //Given
+        String fileId = "file-id";
+        when(s3ClientService.deleteFile(fileId)).thenReturn(true);
+
+        //When
+        ResponseEntity response = controller.deleteFile(fileId);
+
+        //Then
+        assertTrue(response.getStatusCode().equals(HttpStatus.NO_CONTENT));
+    }
 }

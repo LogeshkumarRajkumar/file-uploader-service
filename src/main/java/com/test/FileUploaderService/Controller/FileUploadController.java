@@ -38,4 +38,13 @@ public class FileUploadController {
                 .header("Content-Disposition", "attachment; filename=" + fileName)
                 .body(file);
     }
+
+    @DeleteMapping("/files/{name}")
+    public ResponseEntity deleteFile(@PathVariable("name") String fileName) {
+
+        if(this.amazonS3ClientService.deleteFile(fileName) == false)
+            return new ResponseEntity(null, HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity(null, HttpStatus.NO_CONTENT);
+    }
 }
