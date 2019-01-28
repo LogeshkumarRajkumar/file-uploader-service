@@ -1,5 +1,5 @@
 Steps to run the application:
-Sample steps to be followed for UNIX/Windows/Linux based machines.
+Same steps to be followed for UNIX/Windows/Linux based machines.
 
 1: Allow application to connect to AWS S3
 Option 1:
@@ -17,7 +17,7 @@ Option 2:
 -  Export access credentials.
 
 Option 3:
-- Giving IAM permission role to access all s3 resources to the EC@ machine to which
+- Giving IAM permission role to access all s3 resources to the EC2 machine to which
     the application is deployed with which above steps can be avoided.
 
 2: Provide appropriate bucket name in the application.properties file under src/resource folder
@@ -40,7 +40,7 @@ POST http://localhost:8080/files/
 GET http://localhost:8080/files/
      file - formData
 
-     Response: All files in Zip format [OK}
+     Response: All files in Zip format [OK]
 
 GET http://localhost:8080/files/{id}/
      file - formData
